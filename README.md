@@ -16,9 +16,11 @@ Delete tasks
 
 Select tags such as Urgent and Important
 
-Navigation between the different pages
+Navigate between the different pages
 
 Figma-inspired layout, typography, spacing, colors, and components
+
+Save frontend tasks locally using browser localStorage
 
 Backend
 
@@ -41,6 +43,8 @@ Authorization to prevent users from accessing another user's tasks
 Request validation with Zod
 
 MongoDB persistence with Mongoose
+
+API testing with Thunder Client
 
 Tech Stack
 
@@ -78,7 +82,7 @@ JSON Web Tokens (JWT)
 
 bcryptjs
 
-Thunder Client for API testing
+Thunder Client
 
 Project Structure
 
@@ -311,9 +315,11 @@ Register a user
 
 Login and receive a JWT
 
+Verify a protected route using the JWT
+
 Create a task
 
-Get the user's tasks
+Get the authenticated user's tasks
 
 Get one task
 
@@ -321,7 +327,7 @@ Update the task
 
 Delete the task
 
-Register/login a second user
+Register and login a second user
 
 Confirm the second user cannot access the first user's tasks
 
@@ -329,13 +335,19 @@ Confirm the second user cannot update or delete the first user's tasks
 
 Confirm protected routes reject requests without a valid JWT
 
-Known Issues / Limitations
+Known Limitations
 
-The React frontend is not connected to the backend in this stage. The backend is intentionally tested separately using Thunder Client, as required by the internship brief.
+The React frontend is not connected to the backend in this stage. The backend is tested separately with Thunder Client, as required by the internship brief.
 
-The backend requires a valid MongoDB connection string and JWT secret in the backend/.env file.
+The backend depends on a valid MongoDB connection string and JWT secret stored in the local backend/.env file.
 
 The project is intended to run locally and has not been deployed.
+
+There is currently no password reset, email verification, refresh-token flow, or role-based access control.
+
+Frontend task data and backend task data are separate because the frontend has not been integrated with the backend for this stage.
+
+Clearing browser localStorage removes tasks created through the frontend, while backend tasks are stored separately in MongoDB.
 
 GitHub Repository
 

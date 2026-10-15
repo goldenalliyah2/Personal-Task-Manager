@@ -45,7 +45,8 @@ export const createTask = async (
   }
 };
 
-// Get all tasks belonging to the logged-in user
+// Get all tasks belonging to the logged-in user.
+// Optionally search by task title, description, or tags.
 export const getTasks = async (
   req: Request,
   res: Response,
@@ -53,9 +54,68 @@ export const getTasks = async (
   try {
     const authenticatedRequest = req as AuthenticatedRequest;
 
-    const tasks = await TaskModel.find({
+    const rawSearch = req.query.search;
+
+    // Ensure the search query is a single string.
+    if (
+      rawSearch !== undefined &&
+      typeof rawSearch !== 'string'
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must be a string',
+      });
+    }
+
+    const search = (rawSearch ?? '').trim();
+
+    // Limit the search query length.
+    if (search.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must not exceed 100 characters',
+      });
+    }
+
+    // Always restrict results to the authenticated user.
+    const filter: Record<string, unknown> = {
       userId: authenticatedRequest.userId,
-    }).sort({
+    };
+
+    if (search) {
+      // Escape regex characters so the search term is treated
+      // as literal text rather than a regular expression.
+      const escapedSearch = search.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&',
+      );
+
+      // Search by title, description, or tags.
+      const searchConditions = [
+        {
+          title: {
+            $regex: escapedSearch,
+            $options: 'i',
+          },
+        },
+        {
+          description: {
+            $regex: escapedSearch,
+            $options: 'i',
+          },
+        },
+        {
+          tags: {
+            $regex: escapedSearch,
+            $options: 'i',
+          },
+        },
+      ];
+
+      filter.$or = searchConditions;
+    }
+
+    const tasks = await TaskModel.find(filter).sort({
       createdAt: -1,
     });
 

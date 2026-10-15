@@ -21,6 +21,86 @@ Navigate between the different pages
 Figma-inspired layout, typography, spacing, colors, and components
 
 Save frontend tasks locally using browser localStorage
+## Task Search Feature
+
+TaskDuty includes a search functionality that allows users to find tasks by title, description, and tags.
+
+### Frontend Search
+
+The frontend search functionality is implemented in `src/Pages/Task.tsx`.
+
+Features include:
+
+- Search tasks by title, description, or tags.
+- Case-insensitive search matching.
+- Automatically filter the task list based on the entered search query.
+- Display the number of matching tasks.
+- Show a message when no tasks match the search query.
+- Clear the search query to restore the full task list.
+- Handle empty search queries by displaying all tasks.
+
+The frontend search uses React state to manage the search query and `useMemo` to calculate the filtered task list.
+
+**Note:** The frontend currently searches tasks stored in browser `localStorage`. It is not yet connected to the backend API.
+
+### Backend Search
+
+The backend search functionality is implemented in `backend/src/controllers/task.controller.ts`.
+
+The existing `GET /api/tasks` endpoint supports an optional `search` query parameter.
+
+**Endpoint:**
+
+GET /api/tasks?search=<keyword>
+
+The backend searches the following task fields:
+
+- `title`
+- `description`
+- `tags`
+
+Additional features include:
+
+- Case-insensitive matching using MongoDB regular expressions.
+- Validation to ensure the search query is a string.
+- A maximum search query length of 100 characters.
+- Escaping of regular expression special characters.
+- Restricting search results to the authenticated user's tasks.
+- Returning an empty task list when no tasks match the query.
+
+All task search requests require authentication using a valid JWT Bearer token.
+
+### Backend Search Examples
+
+Search by title:
+
+GET /api/tasks?search=TaskDuty
+
+Search by description:
+
+GET /api/tasks?search=submit
+
+Search by tag:
+
+GET /api/tasks?search=Urgent
+
+Search with no matching results:
+
+GET /api/tasks?search=nonexistent123
+
+### Search Testing
+
+The backend search endpoint was tested using Thunder Client.
+
+The tests covered:
+
+1. Searching tasks by title.
+2. Searching tasks by description.
+3. Searching tasks by tag.
+4. Searching with a keyword that has no matching results.
+5. Verifying that the endpoint returns an empty task list when no tasks match.
+
+The frontend and backend search implementations were tested separately because the frontend has not yet been integrated with the backend API.
 
 Backend
 
@@ -178,6 +258,12 @@ Health check:
 GET /api/health
 
 API Endpoints
+
+Search tasks
+
+GET /api/tasks?search=<keyword>
+
+The search parameter is optional. When provided, the endpoint searches task titles, descriptions, and tags belonging to the authenticated user. When omitted, the endpoint returns all tasks belonging to the authenticated user.
 
 Authentication
 
